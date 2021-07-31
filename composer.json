@@ -1,0 +1,17 @@
+{
+    "name": "miketutu/ersussd",
+    "description": "ussd for ers",
+    "type": "project",
+    "license": "TM3",
+    "authors": [
+        {
+            "name": "Mike Tutu",
+            "email": "tutuanimichael@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "kreait/firebase-php": "5.x-dev",
+        "php": ">=7.4.16"
+    }
+}
