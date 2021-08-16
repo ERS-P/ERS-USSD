@@ -1,84 +1,108 @@
 <?php
-date_default_timezone_get("Africa/Accra");
 
-include_once 'db.php';
+header("content-type:text/plain");
 
-// Reads the variables sent via POST from AT gateway
-//Old-Way
+include("functions.php" );
+include("connection.php");
+include("reportFunctions.php");
+include("feedback.php");
+
 // $sessionId=$_POST['sessionId'];
 // $serviceCode=$_POST['serviceCode'];
-// $phoneNumber=$_POST['phonenumber'];
-// $text=$_POST['text'];
 
-$TransId = $_GET["TransId"];
-$RequestType = $_GET["RequestType"];
-$MSISDN = $_GET["MSISDN"];
-$SHORTCODE = $_GET["SHORTCODE"];
-$AppID = $_GET["AppID"];
-$USSDString = $_GET["USSDString"];
-  
-session_start();
-if($text==""){
-    // This is the first request
-    $response="CON What would you want to do \n";
-    $response .="1.Report an emergency \n";
-    $response .="2.Send a feedback \n";
-}
-elseif($text=="1"){
-    //Business logic for the first response
-    $response="CON Choose the type of emergency \n";
-    $response .="1.Fire \n";
-    $response .="2.Flood \n";
-    $response .="3.Landslide \n";
-    $response .="4.Other \n";
-}
-elseif($text=="2"){
-    //Business logic for the first response
-    $response="CON Choose one of the feedbacks\n";
-    $response .="1.Emergency has been stopped\n";
-    $response .="2.Emergency got worse \n";
-}
-elseif($text=="1*1"){
-    //This is second level response
-   $title="Fire";
-//    $description="Uncontrollable flames in my apartment at kasoa";
-   $response .="CON Enter your location:";
-}
-elseif($text=='1*1*" "'){
-    $response = "Please try again.";
-}
-elseif($text=="1*1*$text"){
-    $response = "END Sent.";
+$phoneNumber=$_POST['phoneNumber'];
+$text=$_POST['text'];
+
+$data = explode("*",$text);
+
+$level = 0;
+
+$level = count($data);
+
+if($level == 0 || $level == 1){
+    main_menu($phoneNumber);
 }
 
-elseif($text=="1*2"){
-    //This is second level response
-   $title="Flood";
-   $description="Uncontrollable flames in my apartment at kasoa";
-   $response=" END Emergency Post has been submitted";
-}
-elseif($text=="1*3"){
-    //This is second level response
-   $title="Landslide";
-   $description="Uncontrollable flames in my apartment at kasoa";
-   $response=" END Emergency Post has been submitted";
-}
-elseif($text=="1*4"){
-    //This is second level response
-   $title="Other";
-   $description="Uncontrollable flames in my apartment at kasoa";
-   $response=" END Emergency Post has been submitted";
-}
-elseif($text=="2*1" || $text=="2*2"){
-    $response = "END Feedback Submitted";
-}
-else{
-    $response ="END Wrond Input. Retry Again";
+//Initital Level
+if($level>1){
+    switch($data[1]){
+    	case 0:
+            user_register($data, $phoneNumber);
+            break;
+            
+        case 1:
+            check_if_registered($data,$phoneNumber);
+            // report_emergency($data);
+            //report_emergency will be availabe after user registers
+            break;
+        
+        case 2:
+            send_feedback($data);
+            break;
+    
+        case 3:
+                check_user_exist($phoneNumber);
+            //check_user_exist($phoneNumber);
+            //user_register($data, $phoneNumber);
+            break;
+        
+        default:
+        $text = "Invalid input\nPlease enter a valid menu option";
+        ussd_end($text);
+    }
 }
 
-//echo the response to the API.The response depends on the statement that is fulfilled in each instance
-header('Content-type: text/plain');
-echo $response;
+//Second level responses
+if($level>2){
+    switch($data[2]){
+    	case 0:
+    	    user_register($data);
+            break;
+        case 1:
+            if($text=="1*2*1"){
+                emergency_curbed($data,$text);
+            }
+            else{
+            report_fire($data,$text);
+            }
+            break;
+        
+        case 2:
+            if($text=="1*2*2"){
+                emergency_notcurbed($data,$text);
+            }
+            else{
+            report_flood($data);
+            }
+            break;
+        
+//emergency_other moves further to level4            
+        case 3:
+            if($text=="1*2*3" || $level==4){
+                emergency_other($data,$text);
+            }
+            else{
+            report_carAccident($data);
+            }
+            break;
 
+        case 4:
+            report_firstAid($data);
+            break;
+
+        case 5:
+            report_violence($data);
+            break;
+
+        case 6:
+            report_other($data);
+            break;
+        
+        
+        //default:
+        //$text = "Invalidate input\nPlease enter a valid menu option";
+        //ussd_end($text);
+    }
+}
 
 ?>
