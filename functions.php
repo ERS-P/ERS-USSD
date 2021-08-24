@@ -65,7 +65,7 @@ function user_register($data){
         ussd_start($text); 
     }
     if(count($data)==4){
-        $text = "Enter your gender";
+        $text = "Press 1 if your gender is male or 2 for female";
         ussd_start($text); 
     }
     if(count($data)==5){
@@ -80,7 +80,12 @@ function user_register($data){
         $phoneNumber=$_POST['phoneNumber'];
         $firstname = $data[2];
         $lastname = $data[3];
-        $gender = $data[4];
+        //gender
+        if($data[4]=="1"){
+            $gender = "male";
+        }else{
+            $gender = "female";
+        }
         $idNumber = $data[5];
         $email = $data[6];
 
