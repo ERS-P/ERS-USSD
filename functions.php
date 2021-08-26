@@ -139,6 +139,32 @@ function report_emergency($data){
     6.Other";
     ussd_start($text);
     }
+    
+     if(count($data)>2){
+        if($data[2]==1){
+            report_fire($data,$text);
+        }
+        else if($data[2]==2){
+            report_flood($data,$text);
+        }
+        else if($data[2]==3){
+            report_carAccident($data,$text);
+        }
+        else if($data[2]==4){
+            report_firstAid($data,$text);
+
+        }
+        else if($data[2]==5){
+            report_violence($data,$text);
+        }
+        else if($data[2]==6){
+            report_other($data,$text);
+        }
+        else{
+            $text = "Invalidate Entry, please try again";
+            ussd_end($text);
+        }
+    }
 }
 
 //send feed back
@@ -150,20 +176,26 @@ function send_feedback($data){
     3.Other";
     ussd_start($text);
     }
+    
+    if(count($data)>2){
+        if($data[2]==1){
+            emergency_curbed($data,$text);
+        }
+        if($data[2]==2){
+            emergency_notcurbed($data,$text);
+        }
+        if($data[2]==3){
+            emergency_other($data,$text);
+        }
+        else{
+            $text="Invalid Entry, try again";
+            ussd_end($text);
+        }
+    }
+    
 }
 
-function feedback_menu($data){
-    if(count($data)==2){
-        $text2="You can send feedbacks to us here, press
-    1 to proceed";
-    ussd_start($text2);
-    }
 
-    if(count($data)==3 && $text2=="1*2*1"){
-        send_feedback($data);
-        ussd_start($text2);
-    }
-}
 
 //-------------------Emergencies---------------------\\
 

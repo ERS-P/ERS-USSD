@@ -52,57 +52,6 @@ if($level>1){
     }
 }
 
-//Second level responses
-if($level>2){
-    switch($data[2]){
-    	case 0:
-    	    user_register($data);
-            break;
-        case 1:
-            if($text=="1*2*1"){
-                emergency_curbed($data,$text);
-            }
-            else{
-            report_fire($data,$text);
-            }
-            break;
-        
-        case 2:
-            if($text=="1*2*2"){
-                emergency_notcurbed($data,$text);
-            }
-            else{
-            report_flood($data);
-            }
-            break;
-        
-//emergency_other moves further to level4            
-        case 3:
-            if($text=="1*2*3" || $level==4){
-                emergency_other($data,$text);
-            }
-            else{
-            report_carAccident($data);
-            }
-            break;
 
-        case 4:
-            report_firstAid($data);
-            break;
-
-        case 5:
-            report_violence($data);
-            break;
-
-        case 6:
-            report_other($data);
-            break;
-        
-        
-        //default:
-        //$text = "Invalidate input\nPlease enter a valid menu option";
-        //ussd_end($text);
-    }
-}
 
 ?>
